@@ -1,70 +1,128 @@
-# Getting Started with Create React App
+# DocLens — AI Document Analyzer
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack AI-powered document analysis tool with React frontend, Express server, and FastAPI backend. Analyzes contracts, research papers, business reports, and general documents using Groq's Llama 3.3 70B model.
 
-## Available Scripts
+## Architecture
 
-In the project directory, you can run:
+```
+doclens/
+├── frontend/     # React (Vite) - UI components, hooks, services
+├── backend/      # FastAPI - Groq API, chunking, analysis logic
+├── server/       # Express - Serves React build, proxies /api to FastAPI
+└── doclens.html  # Legacy single-file version (deprecated)
+```
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Frontend:** React 18, Vite
+- **Backend:** FastAPI (Python)
+- **Server:** Express (Node.js)
+- **AI:** Groq API (llama-3.3-70b-versatile)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Quick Start
 
-### `npm test`
+### 1. Backend (FastAPI)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate   # or `venv\Scripts\activate` on Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
+```
 
-### `npm run build`
+### 2. Frontend (React)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Open http://localhost:3000. The Vite dev server proxies `/api` to the FastAPI backend.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 3. Production (Optional)
 
-### `npm run eject`
+```bash
+# Build frontend
+cd frontend && npm run build
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Start Express server (serves build + proxies API)
+cd ../server
+npm install
+NODE_ENV=production node index.js
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Environment
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Backend (FastAPI)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Create `backend/.env` from the example (never commit `.env`):
 
-## Learn More
+```bash
+cp backend/.env.example backend/.env
+# Edit backend/.env and add your Groq API key
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+| Variable     | Description |
+|-------------|-------------|
+| GROQ_API_KEY| Groq API key from [console.groq.com](https://console.groq.com) |
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+When `GROQ_API_KEY` is set, users do not need to enter an API key in the UI.
 
-### Code Splitting
+### Server (Express)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Variable   | Default              | Description                    |
+|-----------|----------------------|--------------------------------|
+| PORT      | 5000                 | Express server port            |
+| API_URL   | http://localhost:8000| FastAPI backend URL            |
+| NODE_ENV  | development          | Set to `production` for build  |
 
-### Analyzing the Bundle Size
+## API Endpoints
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- `POST /api/analyze` — Analyze document (body: document_text, document_type, api_key)
+- `POST /api/search` — Semantic search (body: document_text, query, api_key)
+- `GET /api/health` — Health check
 
-### Making a Progressive Web App
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Backend (pytest)
 
-### Advanced Configuration
+```bash
+cd backend
+pip install -r requirements.txt
+pytest -v
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Frontend (Vitest)
 
-### Deployment
+```bash
+cd frontend
+npm install
+npm test
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Project Structure
 
-### `npm run build` fails to minify
+### Frontend (`frontend/`)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `src/components/` — React UI components
+- `src/hooks/` — Custom hooks (useDocument, useApiKey)
+- `src/services/` — API client
+- `src/utils/` — PDF loader, helpers
+- `src/styles/` — Global CSS
+
+### Backend (`backend/`)
+
+- `app/api/routes/` — FastAPI route handlers
+- `app/services/` — Groq API, chunking logic
+- `app/models/` — Pydantic schemas
+- `tests/` — Pytest test suite
+
+### Server (`server/`)
+
+- `index.js` — Express app, static serve, API proxy
+
+## License
+
+MIT

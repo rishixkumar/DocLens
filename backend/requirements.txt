@@ -1,0 +1,21 @@
+# DocLens Backend - FastAPI Dependencies
+# Core framework
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+
+# HTTP client for Groq API
+httpx==0.28.1
+
+# PDF processing (server-side fallback; primary parsing is client-side)
+pypdf2==3.0.1
+
+# Environment and validation
+pydantic==2.10.3
+pydantic-settings==2.6.1
+python-dotenv==1.0.1
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.24.0
+pytest-cov==6.0.0
+httpx==0.28.1
